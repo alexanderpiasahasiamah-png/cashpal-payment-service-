@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CashPal Payment</title>
+<style>
+body { font-family: Arial; display:flex; justify-content:center; align-items:center; height:100vh; background:#f4f6f8; }
+.card { background:#fff; padding:25px; border-radius:10px; box-shadow:0 10px 25px rgba(0,0,0,0.1); width:100%; max-width:400px;}
+input, select, button { width:100%; padding:12px; margin-top:10px; border-radius:6px; border:1px solid #ccc; font-size:16px;}
+button { background:#007bff; color:#fff; border:none; cursor:pointer; }
+button:hover{background:#0056b3;}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>Make Payment</h2>
+
+<!-- Repayment token -->
+<input type="hidden" id="token" value="GH_9xA7kP21">
+
+<label>Amount</label>
+<input type="text" value="GHS 100.00" disabled>
+<input type="hidden" id="amount" value="100">
+
+<label>Customer Phone</label>
+<input type="tel" id="phone" placeholder="0505212068" required>
+
+<label>Network</label>
+<select id="network">
+  <option value="VODAFONE">Vodafone</option>
+</select>
+
+<button onclick="pay()">Pay Now</button>
+</div>
+
+<script>
+async function pay() {
+  const token = document.getElementById('token').value;
+  const phone = document.getElementById('phone').value;
+  const network = document.getElementById('network').value;
+
+  if(!phone) { alert('Enter customer phone'); return; }
+
+  try {
+    const res = await fetch('/api/payments', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({token, phone, network})
+    });
+
+    const data = await res.json();
+    if(data.status==='FAILED'){
+      window.location.href='failure.html';
+    } else {
+      window.location.href='success.html';
+    }
+
+  } catch(err){
+    window.location.href='failure.html';
+  }
+}
+</script>
+</body>
+</html>
